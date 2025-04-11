@@ -13,7 +13,7 @@ namespace Hevy.Api
         public Client(string apiKey)
         {
             _httpClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            _httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
         }
 
         public async Task<T> GetAsync<T>(string endpoint)
@@ -36,6 +36,18 @@ namespace Hevy.Api
             return JsonConvert.DeserializeObject<TResponse>(jsonResponse);
         }
 
+        public async Task<TResponse> PutAsync<TRequest, TResponse>(string endpoint, TRequest payload)
+        {
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync(endpoint, content);
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<TResponse>(jsonResponse);
+        }
+
         public async Task<Workout[]> GetWorkoutsAsync(int page = 1, int pageSize = 10)
         {
             string endpoint = $"workouts?page={page}&pageSize={pageSize}";
@@ -47,24 +59,28 @@ namespace Hevy.Api
             return await PostAsync<Workout, Workout>("workouts", newWorkout);
         }
 
-        Task<WorkoutCount> IClient.GetWorkoutCountAsync()
+        public async Task<WorkoutCount> GetWorkoutCountAsync()
         {
-            throw new NotImplementedException();
+            string endpoint = "workouts/count";
+            return await GetAsync<WorkoutCount>(endpoint);
         }
 
-        Task<Event> IClient.GetWorkoutEventsAsync(int page, int pageSize, string since)
+        public async Task<Event[]> GetWorkoutEventsAsync(int page = 1, int pageSize = 10, string since = "1970-01-01T00:00:00Z")
         {
-            throw new NotImplementedException();
+            string endpoint = $"workouts/events?page={page}&pageSize={pageSize}";
+            return await GetAsync<Event[]>(endpoint);
         }
 
-        Task<Workout> IClient.GetWorkoutAsync(string workoutId)
+        public async Task<Workout> GetWorkoutAsync(string workoutId)
         {
-            throw new NotImplementedException();
+            string endpoint = $"workouts/{workoutId}";
+            return await GetAsync<Workout>(endpoint);
         }
 
-        Task<Workout> IClient.UpdateWorkoutAsync(string workoutId)
+        public async Task<Workout> UpdateWorkoutAsync(Workout workout)
         {
-            throw new NotImplementedException();
+            string endpoint = $"workouts/{workout.Id}";
+            return await PutAsync<Workout, Workout> (endpoint, workout);
         }
     }
 }
