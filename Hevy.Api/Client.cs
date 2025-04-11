@@ -1,6 +1,5 @@
 ﻿using HevyClient.Models;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace Hevy.Api
