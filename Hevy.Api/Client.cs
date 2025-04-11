@@ -48,7 +48,9 @@ namespace Hevy.Api
             return JsonConvert.DeserializeObject<TResponse>(jsonResponse);
         }
 
-        public async Task<Workout[]> GetWorkoutsAsync(int page = 1, int pageSize = 10)
+        #region Workouts
+
+        public async Task<Workout[]> GetWorkoutsAsync(int page = 1, int pageSize = 5)
         {
             string endpoint = $"workouts?page={page}&pageSize={pageSize}";
             return await GetAsync<Workout[]>(endpoint);
@@ -82,5 +84,68 @@ namespace Hevy.Api
             string endpoint = $"workouts/{workout.Id}";
             return await PutAsync<Workout, Workout> (endpoint, workout);
         }
+
+        #endregion
+
+
+        #region Routines
+
+        public async Task<Routine[]> GetRoutinesAsync(int page = 1, int pageSize = 5)
+        {
+            string endpoint = $"routines?page={page}&pageSize={pageSize}";
+            return await GetAsync<Routine[]>(endpoint);
+        }
+
+        public async Task<Routine> PostRoutineAsync(Routine newRoutine)
+        {
+            return await PostAsync<Routine, Routine>("routines", newRoutine);
+        }
+
+        public async Task<Routine> UpdateRoutineAsync(Routine routine)
+        {
+            string endpoint = $"routines/{routine.Id}";
+            return await PutAsync<Routine, Routine>(endpoint, routine);
+        }
+
+        #endregion
+
+
+        #region Exercise Templates
+
+        public async Task<ExerciseTemplate[]> GetExerciseTemplatesAsync(int page =1, int pageSize = 5)
+        {
+            string endpoint = $"exercise_templates?page={page}&pageSize={pageSize}";
+            return await GetAsync<ExerciseTemplate[]>(endpoint);
+        }
+
+        public async Task<ExerciseTemplate> GetExerciseTemplateAsync(string exerciseTemplateId)
+        {
+            string endpoint = $"exercise_templates/{exerciseTemplateId}";
+            return await GetAsync<ExerciseTemplate>(endpoint);
+        }
+
+        #endregion
+
+
+        #region Routine Folders
+
+        public async Task<RoutineFolder[]> GetRoutineFoldersAsync(int page = 1, int pageSize = 5)
+        {
+            string endpoint = $"routine_folders?page={page}&pageSize={pageSize}";
+            return await GetAsync<RoutineFolder[]>(endpoint);
+        }
+
+        public async Task<RoutineFolder> PostRoutineFolderAsync(RoutineFolder newRoutineFolder)
+        {
+            return await PostAsync<RoutineFolder, RoutineFolder>("routine_folders", newRoutineFolder);
+        }
+
+        public async Task<RoutineFolder> GetRoutineFolderAsync(string folderId)
+        {
+            string endpoint = $"routine_folders/{folderId}";
+            return await GetAsync<RoutineFolder>(endpoint);
+        }
+
+        #endregion
     }
 }
